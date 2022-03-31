@@ -3,6 +3,7 @@ import nicoTwo from './Nico2.jpg'
 import './App.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { connectDB, getMeetingState, setMeetingState } from './db.js'
 
 const imagesPath = {
     yes: nicoTwo,
@@ -14,16 +15,13 @@ const backColor = {
   yes: '#fa2509'
 }
   
+connectDB()
+const meetingState = getMeetingState()
   class App extends React.Component {
-    state = {
-      open: true,
-      inMeeting: true
-    }
-    toggleImage = () => {
-      this.setState(state => ({ open: !state.open }))
-    }
-  
-    getImageName = () => this.state.open ? 'no' : 'yes'
+    // Add logic to see what state should be
+    // Add logic to change state
+
+    getImageName = () => meetingState ? 'no' : 'yes'
   
     render() {
       const imageName = this.getImageName();
@@ -34,9 +32,9 @@ const backColor = {
         <p>
           Are you in a <code>MEETING</code> ?
         </p>
-        <button onClick={this.toggleImage}>Indeed</button>
+        <button onClick={setMeetingState(true)}>Indeed</button>
         <div> Or nah </div>
-        <button onClick={this.toggleImage}>No</button>
+        <button onClick={setMeetingState(false)}>No</button>
       </header>
     </div>
   );
