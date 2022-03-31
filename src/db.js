@@ -13,7 +13,7 @@ const NicoMeetingState = new meetingState(false);
     NicoMeetingState.save();
 
 const CONNECTION_URL =
-    ''
+    'mongodb://localhost:27017/NicoMeeting/React'
 
 const connectDB = async () => {
     try {
