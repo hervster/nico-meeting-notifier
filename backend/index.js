@@ -14,19 +14,15 @@ mongoose.connect('mongodb://localhost:27017/', {
 const MeetingStateSchema = new mongoose.Schema({
     meetState: { 
         type: Boolean,
-        required: true,
+        required: true
         }
     });
 
-MeetingStateSchema.methods.getState = function getState() {
-    return this.meetState;
-}
-
-MeetingStateSchema.methods.setState = function setState(input) {
-    this.meetState = input;
-}
-
-const meetingState = mongoose.model("inMeeting", MeetingStateSchema);
+const meetingState = mongoose.model("NicoInMeeting", MeetingStateSchema);
+var someMeetingState = new meetingState({ meetState: false})
+someMeetingState.save((err) => {
+    if (err) console.log("Error is: " + err);
+})
 meetingState.createIndexes();
 
 // Express
@@ -39,26 +35,28 @@ app.get("/", (req, res) => {
 
 })
 
-app.get("/getState", async(res) => {
-    let result = getMeetingState();
+app.get("/getState", async(req, res) => {
+    let result = await getMeetingState();
     res.send("State is: " + result)
     return result;
 })
 
 app.post("/saveState", async (req, res) => {
     setMeetingState(req.body.meetState);
-    console.log("State set")
+    res.end("State set!")
 })
 
+const setMeetingState = async (boolState) => {
+    let id = '624b499a097154a9b132b510'
+    meetingState.findByIdAndUpdate(id, {meetState: boolState})
+}
+
 const getMeetingState = async () => {
-    const newMeetState = await meetingState.find();
-    const s = newMeetState.getState();
-    console.log("Meeting state is: " + s);
+    console.log("Finding state")
+    let id = '624b499a097154a9b132b510'
+    const newMeetState = await meetingState.findById(id);
+    const s = newMeetState.meetState;
     return s;
 }
 
-const setMeetingState = async (stateInput) => {
-    const newMeetState = await meetingState.find();
-    newMeetState.setState(stateInput);
-    newMeetState.save();
-} 
+app.listen(5000);

@@ -3,46 +3,73 @@ import nicoTwo from './Nico2.jpg'
 import './App.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import mongoose from 'mongoose';
-import express from 'express';
 
 const imagesPath = {
-  yes: nicoTwo,
-  no: nicoOne
-}
+    yes: nicoTwo,
+    no: nicoOne
+  }
 
 const backColor = {
-no: '#0cf31f',
-yes: '#fa2509'
+  no: '#0cf31f',
+  yes: '#fa2509'
 }
 
-// DB Stuff ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-const meetingStateSchema = new mongoose.Schema({meetState: Boolean});
-const meetingState = mongoose.model("inMeeting", meetingStateSchema);
-
-const app = express.Router()
-
-const createMeetingState = async () => {
-  const NicoMeetingState = await new meetingState();
-  return NicoMeetingState
+const getRequestOptions = {
+  method: 'GET',
+  headers: { 'Content-Type': 'application/json' }
 }
 
-const updateMeetingState = async (response) => {
-  const meetingState = await meetingState.findOne({})
-  meetingState.meetState = response 
-  await meetingState.save()
-  return meetingState
+var postRequestOptions = {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: ''
 }
+  
+  class App extends React.Component {
+    state = {
+      open: true
+    }
 
-app.get("/", async (req, res ) => {
-  let response = await createMeetingState()
-  return response
-})
+    getMeetingState = () => {
+      console.log("Getting meeting state")
+      fetch('http://192.168.0.159:5000/getState', getRequestOptions)
+        .then(response => response.json())
+        .then( (data) => 
+        { console.log("Data is : " + data)
+          this.setState({open: data.meetState})
+      })
+    }
 
-app.put("/", async (req, res ) => {
-  let response = await updateMeetingState()
-  return response
-})
+    changeState = (boolValue) => {
+      console.log("Changing state")
+      postRequestOptions.body = JSON.stringify({meetState: boolValue})
+      fetch('http://192.168.0.159:5000/saveState', postRequestOptions)
+        .then(response => response.json())
+        .then(data => console.log(data));
+      this.getMeetingState()
+    }
+  
+    getImageName = () => this.state.open ? 'no' : 'yes'
+  
+    render() {
+      const imageName = this.getImageName();
+      return (  
+      <div className="App">
+      <header style={{backgroundColor: backColor[imageName]}} className="App-header">
+        <img style={{maxWidth: '400px'}} src={imagesPath[imageName]} className="App-logo" alt="logo" />
+        <p>
+          Are you in a <code>MEETING</code> ?
+        </p>
+        <button onClick={this.changeState(true)}>Indeed</button>
+        <div> Or nah </div>
+        <button onClick={this.changeState(false)}>No</button>
+      </header>
+    </div>
+  );
+    }
+  }
+  
+  const rootElement = document.getElementById("root");
+  ReactDOM.render(<App />, rootElement);
 
-app.listen(5000, () => console.log('API is running...'))
+  export default App;
