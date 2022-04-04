@@ -15,7 +15,6 @@ const backColor = {
   yes: '#fa2509'
 }
   
-connectDB()
 const meetingState = getMeetingState()
   class App extends React.Component {
     // Add logic to see what state should be
