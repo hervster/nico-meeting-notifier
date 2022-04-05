@@ -53,13 +53,15 @@ var postRequestOptions = {
 
     async componentDidMount() {
       const st = await this.getMeetingState()
-      const im = this.getImageName(st.message)
-      this.setState({open: st.message, imgName: im})
+      const im = this.getImageName(st.State)
+      this.setState({open: st.State, imgName: im})
       this.forceUpdate();
     }
 
     async componentWillUnmount() {
     }
+
+
 
     changeStateTrue = async () => {
       postRequestOptions.body = JSON.stringify({meetState: true})
@@ -80,14 +82,14 @@ var postRequestOptions = {
     changeStateTrueWrapper = async () =>{
       await this.changeStateTrue();
       const st = await this.getMeetingState()
-      this.setState({open: st.message, imgName: 'yes'})
+      this.setState({open: st.State, imgName: 'yes'})
       this.forceUpdate()
     }
 
     changeStateFalseWrapper = async () =>{
       await this.changeStateFalse();
       const st = await this.getMeetingState()
-      this.setState({open: st.message, imgName: 'no'})
+      this.setState({open: st.State, imgName: 'no'})
       this.forceUpdate()
     }
   
