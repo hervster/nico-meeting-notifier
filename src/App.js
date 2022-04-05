@@ -46,13 +46,8 @@ var postRequestOptions = {
           { console.log("Errors occured")}
         })
         .then(async data => {
-          console.log("Data is: ")
-          console.log(data)
-          // this.setState({open: data.message})
           return data;
         })
-        console.log("Result is: ")
-        console.log(result)
         return result;
     }
 
@@ -66,12 +61,8 @@ var postRequestOptions = {
     async componentWillUnmount() {
     }
 
-
-
     changeStateTrue = async () => {
-      console.log("Changing state true")
       postRequestOptions.body = JSON.stringify({meetState: true})
-      console.log("Request body is:" + postRequestOptions.body)
       await fetch("http://192.168.0.159:5000/saveState", postRequestOptions)
       .then(async response => {
         if (response.ok) return response.json();
@@ -79,9 +70,7 @@ var postRequestOptions = {
     }
 
     changeStateFalse = async () => {
-      console.log("Changing state false")
       postRequestOptions.body = JSON.stringify({meetState: false})
-      console.log("Request body is:" + postRequestOptions.body)
       await fetch("http://192.168.0.159:5000/saveState", postRequestOptions)
       .then(async response => {
         if (response.ok) return response.json();
@@ -93,7 +82,6 @@ var postRequestOptions = {
       const st = await this.getMeetingState()
       this.setState({open: st.message, imgName: 'yes'})
       this.forceUpdate()
-      console.log("State is: " + JSON.stringify(this.state))
     }
 
     changeStateFalseWrapper = async () =>{
@@ -101,14 +89,12 @@ var postRequestOptions = {
       const st = await this.getMeetingState()
       this.setState({open: st.message, imgName: 'no'})
       this.forceUpdate()
-      console.log("State is: " + JSON.stringify(this.state))
     }
   
     getImageName = (value) => value ? 'yes' : 'no'
   
     render() {
       let imageName = this.state.imgName
-      console.log("Image name is: " + imageName);
       return (  
       <div className="App">
       <header style={{backgroundColor: backColor[imageName]}} className="App-header">

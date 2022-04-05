@@ -41,7 +41,6 @@ app.get("/", (req, res) => {
 
 app.get("/getState", async(req, res) => {
     let result = await getMeetingState();
-    console.log("State is: " + result)
     res.send(JSON.stringify({State: result}))
     return JSON.stringify(result);
 })
@@ -58,7 +57,6 @@ const setMeetingState = async (boolState) => {
 }
 
 const getMeetingState = async () => {
-    console.log("Finding state")
     const id = "624b499a097154a9b132b510"
     const newMeetState = await meetingState.findById(id);
     const s = newMeetState.meetState;
