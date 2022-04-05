@@ -13,20 +13,88 @@ const backColor = {
   no: '#0cf31f',
   yes: '#fa2509'
 }
+
+const getRequestOptions = {
+  method: "GET",
+  headers: { "Content-Type": "application/json", "Accept": "application/json" }
+}
+
+var postRequestOptions = {
+  method: "POST",
+  headers: { "Content-Type": "application/json", "Accept": "application/json" },
+  body: ''
+}
   
   class App extends React.Component {
-    state = {
-      open: true,
-      inMeeting: true
+
+    constructor(props){
+      super(props);
+
+    this.state = {}
+
+    this.changeStateTrueWrapper = this.changeStateTrueWrapper.bind(this)
+    this.changeStateFalseWrapper = this.changeStateFalseWrapper.bind(this)
+    this.getMeetingState = this.getMeetingState.bind(this)
+  }
+  
+    getMeetingState = async () => {
+      const result = 
+       await fetch("http://192.168.0.159:5000/getState", getRequestOptions )
+        .then(async response => {
+          if (response.ok) 
+          { return await response.json() } else
+          { console.log("Errors occured")}
+        })
+        .then(async data => {
+          return data;
+        })
+        return result;
     }
-    toggleImage = () => {
-      this.setState(state => ({ open: !state.open }))
+
+    async componentDidMount() {
+      const st = await this.getMeetingState()
+      const im = this.getImageName(st.message)
+      this.setState({open: st.message, imgName: im})
+      this.forceUpdate();
+    }
+
+    async componentWillUnmount() {
+    }
+
+    changeStateTrue = async () => {
+      postRequestOptions.body = JSON.stringify({meetState: true})
+      await fetch("http://192.168.0.159:5000/saveState", postRequestOptions)
+      .then(async response => {
+        if (response.ok) return response.json();
+      })
+    }
+
+    changeStateFalse = async () => {
+      postRequestOptions.body = JSON.stringify({meetState: false})
+      await fetch("http://192.168.0.159:5000/saveState", postRequestOptions)
+      .then(async response => {
+        if (response.ok) return response.json();
+      })
+    }
+
+    changeStateTrueWrapper = async () =>{
+      await this.changeStateTrue();
+      const st = await this.getMeetingState()
+      this.setState({open: st.message, imgName: 'yes'})
+      this.forceUpdate()
+    }
+
+    changeStateFalseWrapper = async () =>{
+      await this.changeStateFalse();
+      const st = await this.getMeetingState()
+      this.setState({open: st.message, imgName: 'no'})
+      this.forceUpdate()
     }
   
-    getImageName = () => this.state.open ? 'no' : 'yes'
+    getImageName = (value) => value ? 'yes' : 'no'
   
     render() {
-      const imageName = this.getImageName();
+      let imageName = this.state.imgName
       return (  
       <div className="App">
       <header style={{backgroundColor: backColor[imageName]}} className="App-header">
@@ -34,9 +102,9 @@ const backColor = {
         <p>
           Are you in a <code>MEETING</code> ?
         </p>
-        <button onClick={this.toggleImage}>Indeed</button>
+        <button onClick={this.changeStateTrueWrapper}>Indeed</button>
         <div> Or nah </div>
-        <button onClick={this.toggleImage}>No</button>
+        <button onClick={this.changeStateFalseWrapper}>No</button>
       </header>
     </div>
   );
@@ -47,4 +115,3 @@ const backColor = {
   ReactDOM.render(<App />, rootElement);
 
   export default App;
-
