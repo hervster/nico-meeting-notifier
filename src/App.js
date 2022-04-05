@@ -26,29 +26,46 @@ var postRequestOptions = {
 }
   
   class App extends React.Component {
-    state = {
-    }
 
+    constructor(props){
+      super(props);
+
+    this.state = {}
+
+    this.changeStateTrueWrapper = this.changeStateTrueWrapper.bind(this)
+    this.changeStateFalseWrapper = this.changeStateFalseWrapper.bind(this)
+    this.getMeetingState = this.getMeetingState.bind(this)
+  }
+  
     getMeetingState = async () => {
-      await fetch("http://192.168.0.159:5000/getState", getRequestOptions )
+      const result = 
+       await fetch("http://192.168.0.159:5000/getState", getRequestOptions )
         .then(async response => {
           if (response.ok) 
-          {
-          console.log("Response is: " )
-          console.log(await response.text())
-          console.log(response)
-          console.log("State is initial: " + JSON.stringify(this.state))
-          this.setState( state => ({open: response.body.message}));
-          console.log("State is now: " + JSON.stringify(this.state))
-            return response
-          }
+          { return await response.json() } else
+          { console.log("Errors occured")}
         })
         .then(async data => {
-          console.log("Looking at data now")
+          console.log("Data is: ")
+          console.log(data)
+          // this.setState({open: data.message})
+          return data;
         })
-        
-        this.getImageName();
+        console.log("Result is: ")
+        console.log(result)
+        return result;
     }
+
+    async componentDidMount() {
+      const st = await this.getMeetingState()
+      const im = this.getImageName(st.message)
+      this.setState({open: st.message, imgName: im})
+      this.forceUpdate();
+    }
+
+    async componentWillUnmount() {
+    }
+
 
 
     changeStateTrue = async () => {
@@ -59,8 +76,6 @@ var postRequestOptions = {
       .then(async response => {
         if (response.ok) return response.json();
       })
-      this.setMeetingState();
-
     }
 
     changeStateFalse = async () => {
@@ -71,48 +86,29 @@ var postRequestOptions = {
       .then(async response => {
         if (response.ok) return response.json();
       })
-      this.setMeetingState();
-
     }
 
-    setMeetingState = async () => {
-      const resp = this.getMeetingState()
-      this.setState( state => ({open: resp.message}))
-    }
-    
-    /*
-
-    getMeetingState = () => {
-      console.log("Getting meeting state");
-      fetch('http://192.168.0.159:5000/getState', getRequestOptions)
-        .then( async (response) => { 
-          console.log("Response from get is: " + response.json())
-          await response.json()
-        })
-        .then( async (data) => 
-        { console.log("Data from get is : " + data)
-          this.setState( state => ({open: data.meetState}))
-      })
+    changeStateTrueWrapper = async () =>{
+      await this.changeStateTrue();
+      const st = await this.getMeetingState()
+      this.setState({open: st.message, imgName: 'yes'})
+      this.forceUpdate()
+      console.log("State is: " + JSON.stringify(this.state))
     }
 
-    changeState = (boolValue) => {
-      console.log("Changing state")
-      postRequestOptions.body = JSON.stringify({meetState: boolValue})
-      console.log("Post request options are: " + postRequestOptions)
-      console.log("Request body is:" + postRequestOptions.body)
-      fetch('http://192.168.0.159:5000/saveState', postRequestOptions)
-        .then(async response =>  await response.json())
-        .then(data => console.log(data));
-      this.getMeetingState();
+    changeStateFalseWrapper = async () =>{
+      await this.changeStateFalse();
+      const st = await this.getMeetingState()
+      this.setState({open: st.message, imgName: 'no'})
+      this.forceUpdate()
+      console.log("State is: " + JSON.stringify(this.state))
     }
-
-    */
   
-    getImageName = () => this.state.open ? 'no' : 'yes'
+    getImageName = (value) => value ? 'yes' : 'no'
   
     render() {
-      // this.getMeetingState();
-      let imageName = this.getImageName();
+      let imageName = this.state.imgName
+      console.log("Image name is: " + imageName);
       return (  
       <div className="App">
       <header style={{backgroundColor: backColor[imageName]}} className="App-header">
@@ -120,9 +116,9 @@ var postRequestOptions = {
         <p>
           Are you in a <code>MEETING</code> ?
         </p>
-        <button onClick={this.changeStateTrue}>Indeed</button>
+        <button onClick={this.changeStateTrueWrapper}>Indeed</button>
         <div> Or nah </div>
-        <button onClick={this.changeStateFalse}>No</button>
+        <button onClick={this.changeStateFalseWrapper}>No</button>
       </header>
     </div>
   );
