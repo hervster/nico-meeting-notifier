@@ -14,6 +14,7 @@ Nico works at a startup now though so pray for his mental health.
 MongoDB, Express, React, Node.js
 
 ## In Case You Were Curious
+The images spin :)
 ### In Meeting
 ![Nico In Meeting](https://user-images.githubusercontent.com/11080841/161832262-27d58519-2ac7-4567-86ca-a9fb654ac468.png)
 ### Not In Meeting
