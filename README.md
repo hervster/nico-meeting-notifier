@@ -6,6 +6,7 @@ Nico works at a startup now though so pray for his mental health.
 - [x] Image toggler for checking state and applying correct image
 - [x] API hookup
 - [x] Local server deployment
+- [ ] Tracker for time in meeting
 - [ ] Add auto/scheduled refresh
 - [ ] Fix frontend (Page should change depending on meeting state)
 - [ ] Add meeting status for me 
