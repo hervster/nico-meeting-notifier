@@ -94,6 +94,14 @@ var postRequestOptions = {
     }
   
     getImageName = (value) => value ? 'yes' : 'no'
+
+    meetingState = setInterval(async () => {
+      const meetState =  await this.getMeetingState();
+       if ( this.state.open !== undefined && 
+        ( meetState.State !== this.state.open) ) {
+        window.location.reload();
+      }
+        }, 30000)
   
     render() {
       let imageName = this.state.imgName
